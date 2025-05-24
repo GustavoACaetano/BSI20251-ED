@@ -127,17 +127,26 @@ static void print_paciente(const Paciente p) {
     printf("%d\t%s\t%s\t%d\t%s\n", p.id, p.cpf, p.nome, p.idade, p.data_nascimento);
 }
 
-void pesquisar_nome(const PacientesDynVec *pdv) {
-    char nome[100];
-    printf("Digite o nome do paciente: ");
-    scanf("%s", nome);
-
+void pesquisar_campo(const PacientesDynVec *pdv, char *valor_buscar, int campo) {
     int encontrado = 0;
     int primeiro = 1;
 
     for (int i = 0; i < pdv_size(pdv); i++) {
         Paciente paciente = pdv_get(pdv, i);
-        if (prefix_cmp(paciente.nome, nome)) {
+        int prefixo = 0;
+        switch (campo) {
+            case 1:
+                prefixo = prefix_cmp(paciente.nome, valor_buscar);
+                break;
+            case 2:
+                prefixo = prefix_cmp(paciente.cpf, valor_buscar);
+                break;
+            default:
+                printf("Campo de busca inválido!");
+                return;
+        }
+
+        if (prefixo == 1) {
             encontrado = 1;
             if (primeiro == 1) {
                 primeiro = 0;
@@ -150,27 +159,18 @@ void pesquisar_nome(const PacientesDynVec *pdv) {
         printf("Nenhum paciente encontrado\n");
 }
 
+void pesquisar_nome(const PacientesDynVec *pdv) {
+    char nome[100];
+    printf("Digite o nome do paciente: ");
+    scanf("%s", nome);
+    pesquisar_campo(pdv, nome, 1);
+}
+
 void pesquisar_cpf(const PacientesDynVec *pdv) {
     char cpf[14];
     printf("Digite o cpf do paciente com pontos e hífen no formato correto (xxx.xxx.xxx-xx): ");
     scanf("%s", cpf);
-
-    int encontrado = 0;
-    int primeiro = 1;
-    
-    for (int i = 0; i < pdv_size(pdv); i++) {
-        Paciente paciente = pdv_get(pdv, i);
-        if (prefix_cmp(paciente.cpf, cpf)) {
-            encontrado = 1;
-            if (primeiro == 1) {
-                primeiro = 0;
-                print_header();
-            }
-            print_paciente(paciente);
-        }
-    }
-    if (!encontrado)
-        printf("Nenhum paciente encontrado!\n");
+    pesquisar_campo(pdv, cpf, 2);
 }
 
 static void print_menu_consulta() {
