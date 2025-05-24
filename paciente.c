@@ -13,33 +13,33 @@ struct paciente
     char data_nascimento[10];
 };
 
-struct pacienteList
+struct pacientesDynVec
 {
     Paciente *pacientes;
     int tamanho;
     int capacidade;
 };
 
-PacientesList *pl_create() {
-    PacientesList *pl = (PacientesList *) malloc(sizeof(PacientesList));
-    if (pl == NULL) {
+PacientesDynVec *pdv_create() {
+    PacientesDynVec *pdv = (PacientesDynVec *) malloc(sizeof(PacientesDynVec));
+    if (pdv == NULL) {
         printf("Erro ao alocar memória\n");
-        return;
+        return 0;
     }
 
-    pl->tamanho = 0;
-    pl->capacidade = 4;
-    pl->pacientes = (Paciente *)malloc(pl->capacidade * sizeof(Paciente));
-    if (pl->pacientes == NULL) {
+    pdv->tamanho = 0;
+    pdv->capacidade = 4;
+    pdv->pacientes = (Paciente *)malloc(pdv->capacidade * sizeof(Paciente));
+    if (pdv->pacientes == NULL) {
         printf("Erro ao alocar memória\n");
-        free(pl);
-        return;
+        free(pdv);
+        return 0;
     }
-    return pl;
+    return pdv;
 }
 
 
-PacientesList *pl_create_from_file(const char *filename) {
+PacientesDynVec *pdv_create_from_file(const char *filename) {
     FILE *f = fopen(filename, "rt");
     if (f == NULL) {
         return NULL;
@@ -47,56 +47,56 @@ PacientesList *pl_create_from_file(const char *filename) {
     }
         
 
-    PacientesList *pl = pl_create();
+    PacientesDynVec *pdv = pdv_create();
     char linha[200];
     int i = 0;
     while (fgets(linha, 200, f) != NULL) {
         Paciente p;
         sscanf(linha, "%d,%[^,],%[^,],%d,%s", &p.id, p.cpf, p.nome, &p.idade, p.data_nascimento);
-        pl_insert(pl, p);
+        pdv_insert(pdv, p);
         // sscanf(linha, "%d,%[^,],%[^,],%d,%s", &pacientes[i].id, pacientes[i].cpf, pacientes[i].nome, &pacientes[i].idade, pacientes[i].data_nascimento);
         i++;
     }
     fclose(f);
-    return pl;
+    return pdv;
 }
 
 
-static void reallocate(PacientesList *pl) {
-    pl->capacidade *= 2;
-    pl->pacientes = (Paciente *)realloc(pl->pacientes, pl->capacidade * sizeof(Paciente));
-    if (pl->pacientes == NULL) {
+static void reallocate(PacientesDynVec *pdv) {
+    pdv->capacidade *= 2;
+    pdv->pacientes = (Paciente *)realloc(pdv->pacientes, pdv->capacidade * sizeof(Paciente));
+    if (pdv->pacientes == NULL) {
         printf("Erro ao alocar memória\n");
-        free(pl);
-        return 1;
+        free(pdv);
+        return;
     }
 }
 
-void pl_insert(PacientesList *pl, Paciente p) {
-    if (pl->tamanho == pl->capacidade)
-        reallocate(pl);
+void pdv_insert(PacientesDynVec *pdv, Paciente p) {
+    if (pdv->tamanho == pdv->capacidade)
+        reallocate(pdv);
 
-    pl->pacientes[pl->tamanho++] = p;
+    pdv->pacientes[pdv->tamanho++] = p;
 }
 
-int pl_size(PacientesList *pl) { return pl->tamanho; }
+int pdv_size(const PacientesDynVec *pdv) { return pdv->tamanho; }
 
-int pl_capacity(PacientesList *pl) { return pl->capacidade; }
+int pdv_capacity(const PacientesDynVec *pdv) { return pdv->capacidade; }
 
-Paciente pl_get(PacientesList *pl, int i) {
-    assert(i >= 0 && i < pl->tamanho);
-    return pl->pacientes[i];
+Paciente pdv_get(const PacientesDynVec *pdv, int i) {
+    assert(i >= 0 && i < pdv->tamanho);
+    return pdv->pacientes[i];
 }
 
-void pl_free(PacientesList *pl) {
-    free(pl->pacientes);
-    free(pl);
+void pdv_free(PacientesDynVec *pdv) {
+    free(pdv->pacientes);
+    free(pdv);
 }
 
-void print_pacientes(PacientesList *pl) {
+void print_pacientes(const PacientesDynVec *pdv) {
     printf("ID\tCPF\t\tNome\t\tIdade\tData de Nascimento\n");
-    for (int i = 0; i < pl_size(pl); i++) {
-        Paciente paciente = pl_get(pl, i);
+    for (int i = 0; i < pdv_size(pdv); i++) {
+        Paciente paciente = pdv_get(pdv, i);
         printf("%d\t%s\t%s\t%d\t%s\n", paciente.id, paciente.cpf, paciente.nome, paciente.idade, paciente.data_nascimento);
     }
     printf("================================================\n");
@@ -119,43 +119,85 @@ int prefix_cmp(const char *target, const char *src) {
     return 1;
 }
 
+static void print_header() {
+    printf("ID\tCPF\t\t\t\tNome\tIdade\tData_Cadastro\n");
+}
 
-void pesquisar_nome(PacientesList *pl) {
+static void print_paciente(const Paciente p) {
+    printf("%d\t%s\t%s\t%d\t%s\n", p.id, p.cpf, p.nome, p.idade, p.data_nascimento);
+}
+
+void pesquisar_nome(const PacientesDynVec *pdv) {
     char nome[100];
     printf("Digite o nome do paciente: ");
     scanf("%s", nome);
+
     int encontrado = 0;
-    for (int i = 0; i < pl_size(pl); i++) {
-        Paciente paciente = pl_get(pl, i);
+    int primeiro = 1;
+
+    for (int i = 0; i < pdv_size(pdv); i++) {
+        Paciente paciente = pdv_get(pdv, i);
         if (prefix_cmp(paciente.nome, nome)) {
             encontrado = 1;
-            printf("%d\t%s\t%s\t%d\t%s\n", paciente.id, paciente.cpf, paciente.nome, paciente.idade, paciente.data_nascimento);
+            if (primeiro == 1) {
+                primeiro = 0;
+                print_header();
+            }
+            print_paciente(paciente);
         }
     }
     if (!encontrado)
-        printf("Nenhum paciente não encontrado\n");
+        printf("Nenhum paciente encontrado\n");
 }
 
-void consultar_pacientes(PacientesList *pl) {
-    printf("Escolha o modo de consulta:\n");
+void pesquisar_cpf(const PacientesDynVec *pdv) {
+    char cpf[14];
+    printf("Digite o cpf do paciente com pontos e hífen no formato correto (xxx.xxx.xxx-xx): ");
+    scanf("%s", cpf);
+
+    int encontrado = 0;
+    int primeiro = 1;
+    
+    for (int i = 0; i < pdv_size(pdv); i++) {
+        Paciente paciente = pdv_get(pdv, i);
+        if (prefix_cmp(paciente.cpf, cpf)) {
+            encontrado = 1;
+            if (primeiro == 1) {
+                primeiro = 0;
+                print_header();
+            }
+            print_paciente(paciente);
+        }
+    }
+    if (!encontrado)
+        printf("Nenhum paciente encontrado!\n");
+}
+
+static void print_menu_consulta() {
+    printf("\nEscolha o modo de consulta:\n");
     printf("1 - Por nome\n");
-    printf("2 - Por CPF\n");   
+    printf("2 - Por CPF\n");
     printf("3 - Retornar ao menu principal\n");
-    int menu;
-    scanf("%d", &menu);
-    while (menu != 3) {
+}
+
+void consultar_pacientes(const PacientesDynVec *pdv) {
+    print_menu_consulta();
+    char menu;
+    scanf(" %c", &menu);
+    while (menu != '3') {
         switch (menu) {
-            case 1:
-                pesquisar_nome(pl);
+            case '1':
+                pesquisar_nome(pdv);
                 break;
-            case 2:
-                printf("Função não implementada\n");
+            case '2':
+                pesquisar_cpf(pdv);
                 break;
-            case 3:
+            case '3':
                 break;
             default:
-                printf("Opção inválida\n");
+                printf("Opção inválida!\n");
         }
-        scanf("%d", &menu);
+        print_menu_consulta();
+        scanf(" %c", &menu);
     }
 }

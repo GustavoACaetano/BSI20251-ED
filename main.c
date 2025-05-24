@@ -3,7 +3,7 @@
 #include "paciente.h"
 
 void print_menu() {
-    printf("Menu:\n");
+    printf("\nMenu:\n");
     printf("1 - Consultar paciente\n");
     printf("2 - Atualizar paciente\n");
     printf("3 - Remover paciente\n");
@@ -15,29 +15,29 @@ void print_menu() {
 
 int main() {
     char *arquivo = "bd_paciente.csv";
-    PacientesList *pacientes = pl_create_from_file(arquivo);
+    PacientesDynVec *pacientes = pdv_create_from_file(arquivo);
     print_menu();
     char menu;
     scanf(" %c", &menu);
     while (menu != 'Q') {
         switch (menu) {
             case '1':
-                printf("\n");
+                consultar_pacientes(pacientes);
                 break;
             case '2':
-                printf("Função não implementada\n");
+                printf("Função não implementada!\n");
                 break;
             case '3':
-                printf("Funlão não implementada\n");
+                printf("Função não implementada!\n");
                 break;
             case '4':
-                printf("Função não implementada\n");
+                printf("Função não implementada!\n");
                 break;
             case '5':
                 print_pacientes(pacientes);
                 break;
             default:
-                printf("Opção inválida\n");
+                printf("Opção inválida!\n");
         }
         print_menu();
         scanf(" %c", &menu);

@@ -3,30 +3,30 @@
 #define PACIENTE_H
 
 typedef struct paciente Paciente;
-typedef struct pacienteList PacientesList;
+typedef struct pacientesDynVec PacientesDynVec;
 
-PacientesList* pl_create();
+PacientesDynVec* pdv_create();
 
-PacientesList* pl_create_from_file(const char *filename);
+PacientesDynVec* pdv_create_from_file(const char *filename);
 
-static void reallocate(PacientesList *pl);
+void pdv_insert(PacientesDynVec *pdv, Paciente p);
 
-void pl_insert(PacientesList *pl, Paciente p);
+int pdv_size(const PacientesDynVec *pdv);
 
-int pl_size(PacientesList *pl);
+int pdv_capacity(const PacientesDynVec *pdv);
 
-int pl_capacity(PacientesList *pl);
+Paciente pdv_get(const PacientesDynVec *pdv, int i);
 
-Paciente pl_get(PacientesList *pl, int i);
+void pdv_free(PacientesDynVec *pdv);
 
-void pl_free(PacientesList *pl);
-
-void print_pacientes(PacientesList *pl);
+void print_pacientes(const PacientesDynVec *pdv);
 
 int prefix_cmp(const char *target, const char *src);
 
-void pesquisar_nome(PacientesList *pl);
+void pesquisar_nome(const PacientesDynVec *pdv);
 
-void consultar_pacientes(PacientesList *pl);
+void pesquisar_cpf(const PacientesDynVec *pdv);
+
+void consultar_pacientes(const PacientesDynVec *pdv);
 
 #endif
