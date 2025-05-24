@@ -45,7 +45,6 @@ PacientesDynVec *pdv_create_from_file(const char *filename) {
         return NULL;
         printf("Erro ao abrir o arquivo %s\n", filename);
     }
-        
 
     PacientesDynVec *pdv = pdv_create();
     char linha[200];
@@ -54,7 +53,6 @@ PacientesDynVec *pdv_create_from_file(const char *filename) {
         Paciente p;
         sscanf(linha, "%d,%[^,],%[^,],%d,%s", &p.id, p.cpf, p.nome, &p.idade, p.data_nascimento);
         pdv_insert(pdv, p);
-        // sscanf(linha, "%d,%[^,],%[^,],%d,%s", &pacientes[i].id, pacientes[i].cpf, pacientes[i].nome, &pacientes[i].idade, pacientes[i].data_nascimento);
         i++;
     }
     fclose(f);
@@ -95,6 +93,7 @@ void pdv_free(PacientesDynVec *pdv) {
 
 void print_pacientes(const PacientesDynVec *pdv) {
     printf("ID\tCPF\t\tNome\t\tIdade\tData de Nascimento\n");
+    // Passa por tds os pacientes imprimindo
     for (int i = 0; i < pdv_size(pdv); i++) {
         Paciente paciente = pdv_get(pdv, i);
         printf("%d\t%s\t%s\t%d\t%s\n", paciente.id, paciente.cpf, paciente.nome, paciente.idade, paciente.data_nascimento);
@@ -103,12 +102,15 @@ void print_pacientes(const PacientesDynVec *pdv) {
 }
 
 int prefix_cmp(const char *target, const char *src) {
+    // Validacao das strings
     if (target == NULL || src == NULL) {
         return 0;
     }
     if (strlen(target) < strlen(src)) {
         return 0;
     }
+
+    // Verificacao do prefixo
     int i = 0;
     while (src[i] != '\0') {
         if (target[i] != src[i]) {
@@ -120,18 +122,22 @@ int prefix_cmp(const char *target, const char *src) {
 }
 
 static void print_header() {
-    printf("ID\tCPF\t\t\t\tNome\tIdade\tData_Cadastro\n");
+    printf("\nID\tCPF\t\t\t\tNome\tIdade\tData_Cadastro\n");
 }
 
 static void print_paciente(const Paciente p) {
     printf("%d\t%s\t%s\t%d\t%s\n", p.id, p.cpf, p.nome, p.idade, p.data_nascimento);
 }
 
+// Funcao generica para pesquisar pacientes
 void pesquisar_campo(const PacientesDynVec *pdv, char *valor_buscar, int campo) {
     int encontrado = 0;
-    int primeiro = 1;
 
+    // Repeticao por todo o tamanho do vetor dinamico
     for (int i = 0; i < pdv_size(pdv); i++) {
+        // Para cada paciente do vetor sera feita a verificacao
+        // com base no campo passado
+        // 1 = nome, 2 = cpf (mesmos valores do menu)
         Paciente paciente = pdv_get(pdv, i);
         int prefixo = 0;
         switch (campo) {
@@ -146,10 +152,11 @@ void pesquisar_campo(const PacientesDynVec *pdv, char *valor_buscar, int campo) 
                 return;
         }
 
-        if (prefixo == 1) {
-            encontrado = 1;
-            if (primeiro == 1) {
-                primeiro = 0;
+        // Sendo prefixo, deve-se imprimir as informacoes do paciente
+        if (prefixo) {
+            // O header so sera impresso no primeiro registro desse momento de busca
+            if (!encontrado) {
+                encontrado = 1;
                 print_header();
             }
             print_paciente(paciente);
