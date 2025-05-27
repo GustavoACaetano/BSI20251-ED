@@ -29,9 +29,6 @@ void pdv_free(PacientesDynVec *pdv);
 // Imprime os pacientes do vetor
 void print_pacientes(const PacientesDynVec *pdv);
 
-// Verifica se uma string eh prefixo
-int prefix_cmp(const char *target, const char *src);
-
 // Pesquisa pacientes pelo nome
 void pesquisar_nome(const PacientesDynVec *pdv);
 

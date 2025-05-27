@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "paciente.h"
 
+// Impressao do menu principal do programa
 void print_menu() {
     printf("\nMenu:\n");
     printf("1 - Consultar paciente\n");
@@ -14,9 +15,16 @@ void print_menu() {
 }
 
 int main() {
+    // Carregando o "banco de dados" no programa
     char *arquivo = "bd_paciente.csv";
     PacientesDynVec *pacientes = pdv_create_from_file(arquivo);
+    if (pacientes == NULL) {
+        printf("Erro ao carregar pacientes. Programa interrompido.\n");
+        return 1;
+    }
+    
     print_menu();
+    // Loop principal de funcionamento
     char menu;
     scanf(" %c", &menu);
     while (menu != 'Q') {
@@ -42,6 +50,6 @@ int main() {
         print_menu();
         scanf(" %c", &menu);
     }
-    free(pacientes);
+    pdv_free(pacientes);
     return 0;
 }

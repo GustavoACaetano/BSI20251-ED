@@ -20,6 +20,7 @@ struct pacientesDynVec
     int capacidade;
 };
 
+// Funcao para criar um vetor dinamico de pacientes
 PacientesDynVec *pdv_create() {
     PacientesDynVec *pdv = (PacientesDynVec *) malloc(sizeof(PacientesDynVec));
     if (pdv == NULL) {
@@ -39,11 +40,12 @@ PacientesDynVec *pdv_create() {
 }
 
 
+// Funcao para criar um vetor dinamico de pacientes a partir de um arquivo
 PacientesDynVec *pdv_create_from_file(const char *filename) {
     FILE *f = fopen(filename, "rt");
     if (f == NULL) {
-        return NULL;
         printf("Erro ao abrir o arquivo %s\n", filename);
+        return NULL;
     }
 
     PacientesDynVec *pdv = pdv_create();
@@ -60,6 +62,7 @@ PacientesDynVec *pdv_create_from_file(const char *filename) {
 }
 
 
+// Funcao local para realocar memoria
 static void reallocate(PacientesDynVec *pdv) {
     pdv->capacidade *= 2;
     pdv->pacientes = (Paciente *)realloc(pdv->pacientes, pdv->capacidade * sizeof(Paciente));
@@ -70,6 +73,7 @@ static void reallocate(PacientesDynVec *pdv) {
     }
 }
 
+// Funcao para inserir um paciente 
 void pdv_insert(PacientesDynVec *pdv, Paciente p) {
     if (pdv->tamanho == pdv->capacidade)
         reallocate(pdv);
@@ -77,20 +81,25 @@ void pdv_insert(PacientesDynVec *pdv, Paciente p) {
     pdv->pacientes[pdv->tamanho++] = p;
 }
 
+// Funcao para retornar o tamanho do vetor
 int pdv_size(const PacientesDynVec *pdv) { return pdv->tamanho; }
 
+// Funcao para retornar a capacidade do vetor
 int pdv_capacity(const PacientesDynVec *pdv) { return pdv->capacidade; }
 
+// Funcao para retornar um paciente especifico a partir do indice
 Paciente pdv_get(const PacientesDynVec *pdv, int i) {
     assert(i >= 0 && i < pdv->tamanho);
     return pdv->pacientes[i];
 }
 
+// Funcao para liberar a memoria do vetor dinamico
 void pdv_free(PacientesDynVec *pdv) {
     free(pdv->pacientes);
     free(pdv);
 }
 
+// Funcao para imprimir todos os pacientes de um vetor
 void print_pacientes(const PacientesDynVec *pdv) {
     printf("ID\tCPF\t\tNome\t\tIdade\tData de Nascimento\n");
     // Passa por tds os pacientes imprimindo
@@ -101,7 +110,8 @@ void print_pacientes(const PacientesDynVec *pdv) {
     printf("================================================\n");
 }
 
-int prefix_cmp(const char *target, const char *src) {
+// Funcao local para identificar se a string eh um prefixo
+static int prefix_cmp(const char *target, const char *src) {
     // Validacao das strings
     if (target == NULL || src == NULL) {
         return 0;
@@ -121,10 +131,12 @@ int prefix_cmp(const char *target, const char *src) {
     return 1;
 }
 
+// Funcao local para imprimir um header das informacoes do paciente
 static void print_header() {
     printf("\nID\tCPF\t\t\t\tNome\tIdade\tData_Cadastro\n");
 }
 
+// Funcao local para imprimir um paciente especifico
 static void print_paciente(const Paciente p) {
     printf("%d\t%s\t%s\t%d\t%s\n", p.id, p.cpf, p.nome, p.idade, p.data_nascimento);
 }
@@ -166,6 +178,7 @@ void pesquisar_campo(const PacientesDynVec *pdv, char *valor_buscar, int campo) 
         printf("Nenhum paciente encontrado\n");
 }
 
+// Funcao para pesquisar especificamente pelo nome
 void pesquisar_nome(const PacientesDynVec *pdv) {
     char nome[100];
     printf("Digite o nome do paciente: ");
@@ -173,6 +186,7 @@ void pesquisar_nome(const PacientesDynVec *pdv) {
     pesquisar_campo(pdv, nome, 1);
 }
 
+// Funcao para pesquisar especificamente pelo cpf
 void pesquisar_cpf(const PacientesDynVec *pdv) {
     char cpf[14];
     printf("Digite o cpf do paciente com pontos e hífen no formato correto (xxx.xxx.xxx-xx): ");
@@ -180,6 +194,7 @@ void pesquisar_cpf(const PacientesDynVec *pdv) {
     pesquisar_campo(pdv, cpf, 2);
 }
 
+// Funcao local para imprimir o menu de consulta
 static void print_menu_consulta() {
     printf("\nEscolha o modo de consulta:\n");
     printf("1 - Por nome\n");
@@ -187,6 +202,7 @@ static void print_menu_consulta() {
     printf("3 - Retornar ao menu principal\n");
 }
 
+// Funcao para o loop de busca
 void consultar_pacientes(const PacientesDynVec *pdv) {
     print_menu_consulta();
     char menu;
