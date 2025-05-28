@@ -8,17 +8,16 @@
 Pré-requisito: <br>
 Ter instalado o gcc-11
 
-1 - Clone o repositório:
+#### 1 - Clone o repositório:
 ```bash
 git clone https://github.com/GustavoACaetano/trabalho1-ed.git
 ```
-<br>
 
-OU <br><br>
-Baixe o arquivo zip: 
+#### OU <br>
+#### Baixe o arquivo zip: 
 ![image](https://github.com/user-attachments/assets/6fbea150-6eab-4a52-9e62-9bcbe1c790df)
 <br><br>
-2 - Execute o comando
+#### 2 - Execute o comando
 ```bash
 make
 ```
