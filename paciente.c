@@ -10,12 +10,12 @@ struct paciente
     char cpf[15];
     char nome[100];
     int idade;
-    char data_nascimento[10];
+    char data_cadastro[10];
 };
 
 // // Funcao local para imprimir um paciente especifico
 void print_paciente(const Paciente *p) {
-    printf("%d\t%s\t%s\t%d\t%s\n", p->id, p->cpf, p->nome, p->idade, p->data_nascimento);
+    printf("%d\t%s\t%s\t%d\t%s\n", p->id, p->cpf, p->nome, p->idade, p->data_cadastro);
 }
 
 Paciente *insert_paciente(const char *linha) {
@@ -24,12 +24,12 @@ Paciente *insert_paciente(const char *linha) {
         printf("Erro ao alocar memória\n");
         return NULL;
     }
-    sscanf(linha, "%d,%[^,],%[^,],%d,%s", &p->id, p->cpf, p->nome, &p->idade, p->data_nascimento);
+    sscanf(linha, "%d,%[^,],%[^,],%d,%s", &p->id, p->cpf, p->nome, &p->idade, p->data_cadastro);
     return p;
 }
 
 void write_paciente(FILE *f, const Paciente *p) {
-    fprintf(f, "%d,%s,%s,%d,%s\n", p->id, p->cpf, p->nome, p->idade, p->data_nascimento);
+    fprintf(f, "%d,%s,%s,%d,%s\n", p->id, p->cpf, p->nome, p->idade, p->data_cadastro);
 }
 
 int id_cmp(const Paciente *p, const int id) {
@@ -43,6 +43,33 @@ char *get_nome(Paciente *p) {
 char *get_cpf(Paciente *p) {
     return p->cpf;
 }
+
+void set_nome(Paciente *p, const char *nome) {
+    strcpy(p->nome, nome);
+}
+
+void set_cpf(Paciente *p, const char *cpf) {
+    assert(strlen(cpf) < sizeof(p->cpf));
+    strcpy(p->cpf, cpf);
+}
+
+void set_idade(Paciente *p, int idade) {
+    if (idade < 0) {
+        printf("Idade inválida.\n");
+        return;
+    }
+    p->idade = idade;
+}
+
+void set_data_cadastro(Paciente *p, const char *data_cadastro) {
+    assert(strlen(data_cadastro) < sizeof(p->data_cadastro));
+
+    char inverted_data[11];
+    snprintf(inverted_data, sizeof(inverted_data), "%.4s-%.2s-%.2s", data_cadastro + 6, data_cadastro + 3, data_cadastro);
+
+    strcpy(p->data_cadastro, inverted_data);
+}
+
 
 // // Funcao generica para pesquisar pacientes
 // void pesquisar_campo(const PacientesDynVec *pdv, char *valor_buscar, int campo) {

@@ -22,6 +22,8 @@ void pL_free(BDPaciente *pL);
 
 void salvar_pacientes(const BDPaciente *pL, const char *filename);
 
+void gerenciar_atualizar_paciente(BDPaciente *pL);
+
 void gerenciar_remover_paciente(BDPaciente *pL);
 
 void remover_paciente_id(BDPaciente *pL, int id);

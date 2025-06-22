@@ -15,4 +15,12 @@ int id_cmp(const Paciente *p, const int id);
 char *get_nome(Paciente *p);
 
 char *get_cpf(Paciente *p);
+
+void set_nome(Paciente *p, const char *nome);
+
+void set_cpf(Paciente *p, const char *cpf);
+
+void set_idade(Paciente *p, int idade);
+
+void set_data_cadastro(Paciente *p, const char *data_cadastro);
 #endif

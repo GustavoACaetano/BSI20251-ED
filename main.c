@@ -34,7 +34,7 @@ int main() {
                 consultar_pacientes(pacientes);
                 break;
             case '2':
-                printf("Função não implementada!\n");
+                gerenciar_atualizar_paciente(pacientes);
                 break;
             case '3':
                 gerenciar_remover_paciente(pacientes);

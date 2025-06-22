@@ -206,16 +206,6 @@ void consultar_pacientes(const BDPaciente *pL) {
     }
 }
 
-// Funcao local para imprimir o menu de consulta
-static void print_menu_remover() {
-    printf("\nExecute uma consulta para encontrar o registro que deseja excluir.\n");
-    printf("Escolha o modo de consulta:\n");
-    printf("1 - Por nome\n");
-    printf("2 - Por CPF\n");
-    printf("3 - Encontrei o registro e desejo excluir\n");
-    printf("4 - Retornar ao menu principal\n");
-}
-
 // Funcao para imprimir paciente por ID
 static void print_paciente_id(const BDPaciente *pL, int id) {
     int encontrado = 0;
@@ -238,6 +228,120 @@ static void print_paciente_id(const BDPaciente *pL, int id) {
     if (!encontrado) {
         printf("Nenhum paciente encontrado com ID %d", id);
     }
+}
+
+static void print_menu_atualizar() {
+    printf("\nExecute uma consulta para encontrar o registro que deseja atualizar.\n");
+    printf("Escolha o modo de consulta:\n");
+    printf("1 - Por nome\n");
+    printf("2 - Por CPF\n");
+    printf("3 - Encontrei o registro e desejo atualizar\n");
+    printf("4 - Retornar ao menu principal\n");
+}
+
+void atualizar_paciente_id(BDPaciente *pL, int id, char *cpf, char *nome, int idade, char *data_cadastro) {
+    int encontrado = 0;
+
+    PacienteNode *pN = pL->first;
+    if (pN == NULL) {
+        printf("Nenhum registro salvo!");
+        return;
+    }
+
+    PacienteNode *prev = NULL;
+    Paciente *paciente = pN->paciente;
+
+    while (!encontrado && pN != NULL) {
+        if (id_cmp(paciente, id)) {
+            encontrado = 1;
+            if (cpf != NULL || cpf[0] != '-') {
+                set_cpf(paciente, cpf);
+            }
+
+            if (nome != NULL || nome[0] != '-') {
+                set_nome(paciente, nome);
+            }
+            if (idade != -1) {
+                set_idade(paciente, idade);
+            }
+            if (data_cadastro != NULL || data_cadastro[0] != '-') {
+                set_data_cadastro(paciente, data_cadastro);
+            }
+            return;
+        }
+        prev = pN;
+        pN = pN->next;
+    }
+
+    if (!encontrado) {
+        printf("Nenhum paciente encontrado com ID %d", id);
+    }
+}
+
+void atualizar_paciente(BDPaciente *pL) {
+    int id = 0;
+    printf("\nDigite o ID do registro a ser atualizado: ");
+    scanf("%d", &id);
+    
+    print_paciente_id(pL, id);
+    printf("\nDigite o novo valor para os campos CPF (apenas dígitos), Nome, Idade e Data de Cadastro (para manter o valor atual de um campo, digite ’-’):\n");
+
+    printf("CPF: ");
+    char cpf[15];
+    scanf("%s", cpf);
+    printf("Nome: ");
+    char nome[100];
+    scanf(" %s", nome);
+    printf("Idade: ");
+    char str_idade[3];
+    scanf(" %s", str_idade);
+    int idade;
+    if (str_idade[0] == '-') {
+        idade = -1;
+    } else {
+        idade = atoi(str_idade);
+    }
+    printf("Data de Cadastro (DD/MM/AAAA): ");
+    char data_cadastro[11];
+    scanf(" %s", data_cadastro);
+
+    atualizar_paciente_id(pL, id, cpf, nome, idade, data_cadastro);
+}
+
+void gerenciar_atualizar_paciente(BDPaciente *pL) {
+    print_menu_atualizar();
+    char menu;
+    scanf(" %c", &menu);
+    while (menu != '4') {
+        switch (menu) {
+            case '1':
+                pesquisar_nome(pL);
+                break;
+            case '2':
+                pesquisar_cpf(pL);
+                break;
+            case '3':
+                atualizar_paciente(pL);
+                return;
+            case '4':
+                return;
+            default:
+                printf("Opção inválida!\n");
+        }
+        print_menu_atualizar();
+        scanf(" %c", &menu);
+    }
+}
+
+
+// Funcao local para imprimir o menu de consulta
+static void print_menu_remover() {
+    printf("\nExecute uma consulta para encontrar o registro que deseja excluir.\n");
+    printf("Escolha o modo de consulta:\n");
+    printf("1 - Por nome\n");
+    printf("2 - Por CPF\n");
+    printf("3 - Encontrei o registro e desejo excluir\n");
+    printf("4 - Retornar ao menu principal\n");
 }
 
 void remover_paciente_id(BDPaciente *pL, int id) {
@@ -310,6 +414,7 @@ void gerenciar_remover_paciente(BDPaciente *pL) {
             default:
                 printf("Opção inválida!\n");
         }
+        // Algum erro que está aparecendo várias vezes
         print_menu_remover();
         scanf(" %c", &menu);
     }
