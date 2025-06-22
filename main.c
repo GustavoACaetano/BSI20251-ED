@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "paciente.h"
-#include "pacienteList.h"
+#include "bdPaciente.h"
 
 // Impressao do menu principal do programa
 void print_menu() {
@@ -18,7 +18,7 @@ void print_menu() {
 int main() {
     // Carregando o "banco de dados" no programa
     char *arquivo = "bd_paciente.csv";
-    PacienteList *pacientes = pL_create_from_file(arquivo);
+    BDPaciente *pacientes = pL_create_from_file(arquivo);
     if (pacientes == NULL) {
         printf("Erro ao carregar pacientes. Programa interrompido.\n");
         return 1;

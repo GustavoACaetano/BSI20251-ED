@@ -4,121 +4,45 @@
 #include <stdlib.h>
 #include <assert.h>
 
-// struct paciente
-// {
-//     int id;
-//     char cpf[15];
-//     char nome[100];
-//     int idade;
-//     char data_nascimento[10];
-// };
-
-// struct pacientesDynVec
-// {
-//     Paciente *pacientes;
-//     int tamanho;
-//     int capacidade;
-// };
-
-// // Funcao para criar um vetor dinamico de pacientes
-// PacientesDynVec *pdv_create() {
-//     PacientesDynVec *pdv = (PacientesDynVec *) malloc(sizeof(PacientesDynVec));
-//     if (pdv == NULL) {
-//         printf("Erro ao alocar memória\n");
-//         return 0;
-//     }
-
-//     pdv->tamanho = 0;
-//     pdv->capacidade = 4;
-//     pdv->pacientes = (Paciente *)malloc(pdv->capacidade * sizeof(Paciente));
-//     if (pdv->pacientes == NULL) {
-//         printf("Erro ao alocar memória\n");
-//         free(pdv);
-//         return 0;
-//     }
-//     return pdv;
-// }
-
-
-// // Funcao para criar um vetor dinamico de pacientes a partir de um arquivo
-// PacientesDynVec *pdv_create_from_file(const char *filename) {
-//     FILE *f = fopen(filename, "rt");
-//     if (f == NULL) {
-//         printf("Erro ao abrir o arquivo %s\n", filename);
-//         return NULL;
-//     }
-
-//     PacientesDynVec *pdv = pdv_create();
-//     char linha[200];
-//     int i = 0;
-//     while (fgets(linha, 200, f) != NULL) {
-//         Paciente p;
-//         sscanf(linha, "%d,%[^,],%[^,],%d,%s", &p.id, p.cpf, p.nome, &p.idade, p.data_nascimento);
-//         pdv_insert(pdv, p);
-//         i++;
-//     }
-//     fclose(f);
-//     return pdv;
-// }
-
-
-// // Funcao local para realocar memoria
-// static void reallocate(PacientesDynVec *pdv) {
-//     pdv->capacidade *= 2;
-//     pdv->pacientes = (Paciente *)realloc(pdv->pacientes, pdv->capacidade * sizeof(Paciente));
-//     if (pdv->pacientes == NULL) {
-//         printf("Erro ao alocar memória\n");
-//         free(pdv);
-//         return;
-//     }
-// }
-
-// // Funcao para inserir um paciente 
-// void pdv_insert(PacientesDynVec *pdv, Paciente p) {
-//     if (pdv->tamanho == pdv->capacidade)
-//         reallocate(pdv);
-
-//     pdv->pacientes[pdv->tamanho++] = p;
-// }
-
-// // Funcao para retornar o tamanho do vetor
-// int pdv_size(const PacientesDynVec *pdv) { return pdv->tamanho; }
-
-// // Funcao para retornar a capacidade do vetor
-// int pdv_capacity(const PacientesDynVec *pdv) { return pdv->capacidade; }
-
-// // Funcao para retornar um paciente especifico a partir do indice
-// Paciente pdv_get(const PacientesDynVec *pdv, int i) {
-//     assert(i >= 0 && i < pdv->tamanho);
-//     return pdv->pacientes[i];
-// }
-
-// // Funcao para liberar a memoria do vetor dinamico
-// void pdv_free(PacientesDynVec *pdv) {
-//     free(pdv->pacientes);
-//     free(pdv);
-// }
-
-// // Funcao para imprimir todos os pacientes de um vetor
-// // void print_pacientes(const PacientesDynVec *pdv) {
-// //     printf("ID\tCPF\t\tNome\t\tIdade\tData de Nascimento\n");
-// //     // Passa por tds os pacientes imprimindo
-// //     for (int i = 0; i < pdv_size(pdv); i++) {
-// //         Paciente paciente = pdv_get(pdv, i);
-// //         printf("%d\t%s\t%s\t%d\t%s\n", paciente.id, paciente.cpf, paciente.nome, paciente.idade, paciente.data_nascimento);
-// //     }
-// //     printf("================================================\n");
-// // }
-
-// // Funcao local para imprimir um header das informacoes do paciente
-// static void print_header() {
-//     printf("\nID\tCPF\t\tNome\t\tIdade\tData_Cadastro\n");
-// }
+struct paciente
+{
+    int id;
+    char cpf[15];
+    char nome[100];
+    int idade;
+    char data_nascimento[10];
+};
 
 // // Funcao local para imprimir um paciente especifico
-// static void print_paciente(const Paciente p) {
-//     printf("%d\t%s\t%s\t%d\t%s\n", p.id, p.cpf, p.nome, p.idade, p.data_nascimento);
-// }
+void print_paciente(const Paciente *p) {
+    printf("%d\t%s\t%s\t%d\t%s\n", p->id, p->cpf, p->nome, p->idade, p->data_nascimento);
+}
+
+Paciente *insert_paciente(const char *linha) {
+    Paciente *p = (Paciente *) malloc(sizeof(Paciente));
+    if (p == NULL) {
+        printf("Erro ao alocar memória\n");
+        return NULL;
+    }
+    sscanf(linha, "%d,%[^,],%[^,],%d,%s", &p->id, p->cpf, p->nome, &p->idade, p->data_nascimento);
+    return p;
+}
+
+void write_paciente(FILE *f, const Paciente *p) {
+    fprintf(f, "%d,%s,%s,%d,%s\n", p->id, p->cpf, p->nome, p->idade, p->data_nascimento);
+}
+
+int id_cmp(const Paciente *p, const int id) {
+    return p->id == id;
+}
+
+char *get_nome(Paciente *p) {
+    return p->nome;
+}
+
+char *get_cpf(Paciente *p) {
+    return p->cpf;
+}
 
 // // Funcao generica para pesquisar pacientes
 // void pesquisar_campo(const PacientesDynVec *pdv, char *valor_buscar, int campo) {

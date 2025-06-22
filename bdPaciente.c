@@ -1,5 +1,5 @@
 #include "paciente.h"
-#include "pacienteList.h"
+#include "bdPaciente.h"
 #include "prefix.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,17 +8,18 @@
 struct pacienteNode {
     Paciente *paciente;
     PacienteNode *next;
+    PacienteNode *prev;
 };
 
-struct pacienteList {
+struct bdPaciente {
     int count;
     PacienteNode *first;
     PacienteNode *last;
 };
 
 // Funcao para criar uma lista encadeada de pacientes
-PacienteList *pL_create() {
-    PacienteList *pL = (PacienteList *) malloc(sizeof(PacienteList));
+BDPaciente *pL_create() {
+    BDPaciente *pL = (BDPaciente *) malloc(sizeof(BDPaciente));
     if (pL == NULL) {
         printf("Erro ao alocar memória\n");
         return 0;
@@ -39,17 +40,19 @@ PacienteNode *pN_create(Paciente *p) {
     }
 
     pN->paciente = p;
+    pN->prev = NULL;
     pN->next = NULL;
     return pN;
 }
 
 // Funcao para inserir um node na lista
-void pL_insert(PacienteList *pL, Paciente *p) {
+void pL_insert(BDPaciente *pL, Paciente *p) {
     PacienteNode *pN = pN_create(p);
 
     if (pL->last == NULL) {
         pL->first = pN;
     } else {
+        pN->prev = pL->last;
         pL->last->next = pN;
     }
     pL->count++;
@@ -57,23 +60,18 @@ void pL_insert(PacienteList *pL, Paciente *p) {
 }
 
 // Funcao para criar uma lista de pacientes a partir de um arquivo
-PacienteList *pL_create_from_file(const char *filename) {
+BDPaciente *pL_create_from_file(const char *filename) {
     FILE *f = fopen(filename, "rt");
     if (f == NULL) {
         printf("Erro ao abrir o arquivo %s\n", filename);
         return NULL;
     }
 
-    PacienteList *pL = pL_create();
+    BDPaciente *pL = pL_create();
     char linha[200];
     int i = 0;
     while (fgets(linha, 200, f) != NULL) {
-        Paciente *p = (Paciente *) malloc(sizeof(Paciente));
-        if (p == NULL) {
-            printf("Erro ao alocar memória\n");
-            return NULL;
-        }
-        sscanf(linha, "%d,%[^,],%[^,],%d,%s", &p->id, p->cpf, p->nome, &p->idade, p->data_nascimento);
+        Paciente *p = insert_paciente(linha);
         pL_insert(pL, p);
         i++;
     }
@@ -86,13 +84,8 @@ static void print_header() {
     printf("\nID\tCPF\t\tNome\t\tIdade\tData_Cadastro\n");
 }
 
-// Funcao local para imprimir um paciente especifico
-static void print_paciente(const Paciente *p) {
-    printf("%d\t%s\t%s\t%d\t%s\n", p->id, p->cpf, p->nome, p->idade, p->data_nascimento);
-}
-
 // Funcao para imprimir a lista inteira
-void print_pacientes(PacienteList *pL) {
+void print_pacientes(BDPaciente *pL) {
     if (pL->first == NULL) {
         printf("Nenhum registro salvo!");
         return;
@@ -108,7 +101,7 @@ void print_pacientes(PacienteList *pL) {
 }
 
 // Funcao para desalocar memoria
-void pL_free(PacienteList *pL) {
+void pL_free(BDPaciente *pL) {
     if (pL == NULL) return;
 
     PacienteNode *pN = pL->first;
@@ -130,7 +123,7 @@ static void print_menu_consulta() {
 }
 
 // Funcao generica para pesquisar pacientes
-static void pesquisar_campo(const PacienteList *pL, char *valor_buscar, int campo) {
+static void pesquisar_campo(const BDPaciente *pL, char *valor_buscar, int campo) {
     int encontrado = 0;
 
     PacienteNode *pN = pL->first;
@@ -147,10 +140,10 @@ static void pesquisar_campo(const PacienteList *pL, char *valor_buscar, int camp
         int prefixo = 0;
         switch (campo) {
             case 1:
-                prefixo = prefix_cmp(paciente->nome, valor_buscar);
+                prefixo = prefix_cmp(get_nome(paciente), valor_buscar);
                 break;
             case 2:
-                prefixo = prefix_cmp(paciente->cpf, valor_buscar);
+                prefixo = prefix_cmp(get_cpf(paciente), valor_buscar);
                 break;
             default:
                 printf("Campo de busca inválido!");
@@ -175,7 +168,7 @@ static void pesquisar_campo(const PacienteList *pL, char *valor_buscar, int camp
 }
 
 // Funcao para pesquisar especificamente pelo nome
-static void pesquisar_nome(const PacienteList *pL) {
+static void pesquisar_nome(const BDPaciente *pL) {
     char nome[100];
     printf("Digite o nome do paciente: ");
     scanf("%s", nome);
@@ -183,15 +176,15 @@ static void pesquisar_nome(const PacienteList *pL) {
 }
 
 // Funcao para pesquisar especificamente pelo cpf
-static void pesquisar_cpf(const PacienteList *pL) {
+static void pesquisar_cpf(const BDPaciente *pL) {
     char cpf[14];
-    printf("Digite o cpf do paciente com pontos e hífen no formato correto (xxx.xxx.xxx-xx): ");
+    printf("Digite o cpf do paciente: ");
     scanf("%s", cpf);
     pesquisar_campo(pL, cpf, 2);
 }
 
 // Funcao para o loop de busca
-void consultar_pacientes(const PacienteList *pL) {
+void consultar_pacientes(const BDPaciente *pL) {
     print_menu_consulta();
     char menu;
     scanf(" %c", &menu);
@@ -224,7 +217,7 @@ static void print_menu_remover() {
 }
 
 // Funcao para imprimir paciente por ID
-static void print_paciente_id(const PacienteList *pL, int id) {
+static void print_paciente_id(const BDPaciente *pL, int id) {
     int encontrado = 0;
 
     PacienteNode *pN = pL->first;
@@ -234,7 +227,7 @@ static void print_paciente_id(const PacienteList *pL, int id) {
     }
 
     while (!encontrado && pN != NULL) {
-        if (pN->paciente->id == id) {
+        if (id_cmp(pN->paciente, id)) {
             print_paciente(pN->paciente);
             encontrado = 1;
             return;
@@ -247,7 +240,7 @@ static void print_paciente_id(const PacienteList *pL, int id) {
     }
 }
 
-void remover_paciente_id(PacienteList *pL, int id) {
+void remover_paciente_id(BDPaciente *pL, int id) {
     int encontrado = 0;
 
     PacienteNode *pN = pL->first;
@@ -259,7 +252,7 @@ void remover_paciente_id(PacienteList *pL, int id) {
     PacienteNode *prev = NULL;
 
     while (!encontrado && pN != NULL) {
-        if (pN->paciente->id == id) {
+        if (id_cmp(pN->paciente, id)) {
             encontrado = 1;
             if (prev == NULL) {
                 pL->first = pN->next;
@@ -281,7 +274,7 @@ void remover_paciente_id(PacienteList *pL, int id) {
 }
 
 // Funcao para remover um paciente
-void remover_paciente(PacienteList *pL) {
+void remover_paciente(BDPaciente *pL) {
     int id = 0;
     printf("\nDigite o ID do registro a ser removido: ");
     scanf("%d", &id);
@@ -297,7 +290,7 @@ void remover_paciente(PacienteList *pL) {
 }
 
 // Funcao para gerenciar a remocao um paciente
-void gerenciar_remover_paciente(PacienteList *pL) {
+void gerenciar_remover_paciente(BDPaciente *pL) {
     print_menu_remover();
     char menu;
     scanf(" %c", &menu);
@@ -323,7 +316,7 @@ void gerenciar_remover_paciente(PacienteList *pL) {
 }
 
 // Funcao para salvar a lista no 'banco'
-void salvar_pacientes(const PacienteList *pL, const char *filename) {
+void salvar_pacientes(const BDPaciente *pL, const char *filename) {
     FILE *f = fopen(filename, "w");
     if (f == NULL) {
         printf("Erro ao abrir o arquivo %s\n", filename);
@@ -333,7 +326,7 @@ void salvar_pacientes(const PacienteList *pL, const char *filename) {
     PacienteNode *pN = pL->first;
     while (pN != NULL) {
         Paciente *p = pN->paciente;
-        fprintf(f, "%d,%s,%s,%d,%s\n", p->id, p->cpf, p->nome, p->idade, p->data_nascimento);
+        write_paciente(f, p);
         pN = pN->next;
     }
 
