@@ -10,7 +10,11 @@ Paciente *insert_paciente(const char *linha);
 
 void write_paciente(FILE *f, const Paciente *p);
 
+Paciente *create_paciente(int id, const char *cpf, const char *nome, int idade, const char *data_cadastro);
+
 int id_cmp(const Paciente *p, const int id);
+
+int get_id(Paciente *p);
 
 char *get_nome(Paciente *p);
 

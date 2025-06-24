@@ -40,7 +40,7 @@ int main() {
                 gerenciar_remover_paciente(pacientes);
                 break;
             case '4':
-                printf("Função não implementada!\n");
+                gerenciar_insercao_paciente(pacientes);
                 break;
             case '5':
                 print_pacientes(pacientes);

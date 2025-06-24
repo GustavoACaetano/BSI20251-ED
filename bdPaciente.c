@@ -59,26 +59,6 @@ void pL_insert(BDPaciente *pL, Paciente *p) {
     pL->last = pN;
 }
 
-// Funcao para criar uma lista de pacientes a partir de um arquivo
-BDPaciente *pL_create_from_file(const char *filename) {
-    FILE *f = fopen(filename, "rt");
-    if (f == NULL) {
-        printf("Erro ao abrir o arquivo %s\n", filename);
-        return NULL;
-    }
-
-    BDPaciente *pL = pL_create();
-    char linha[200];
-    int i = 0;
-    while (fgets(linha, 200, f) != NULL) {
-        Paciente *p = insert_paciente(linha);
-        pL_insert(pL, p);
-        i++;
-    }
-    fclose(f);
-    return pL;
-}
-
 // Funcao local para imprimir um header das informacoes do paciente
 static void print_header() {
     printf("\nID\tCPF\t\tNome\t\tIdade\tData_Cadastro\n");
@@ -114,6 +94,7 @@ void pL_free(BDPaciente *pL) {
     free(pL);
 }
 
+// --------------------- Funcoes de consulta ------------------------------------
 // Funcao local para imprimir o menu de consulta
 static void print_menu_consulta() {
     printf("\nEscolha o modo de consulta:\n");
@@ -230,6 +211,7 @@ static void print_paciente_id(const BDPaciente *pL, int id) {
     }
 }
 
+// ------------------------ Funcoes de atualizacao ------------------------
 static void print_menu_atualizar() {
     printf("\nExecute uma consulta para encontrar o registro que deseja atualizar.\n");
     printf("Escolha o modo de consulta:\n");
@@ -248,7 +230,6 @@ void atualizar_paciente_id(BDPaciente *pL, int id, char *cpf, char *nome, int id
         return;
     }
 
-    PacienteNode *prev = NULL;
     Paciente *paciente = pN->paciente;
 
     while (!encontrado && pN != NULL) {
@@ -269,7 +250,6 @@ void atualizar_paciente_id(BDPaciente *pL, int id, char *cpf, char *nome, int id
             }
             return;
         }
-        prev = pN;
         pN = pN->next;
     }
 
@@ -333,7 +313,7 @@ void gerenciar_atualizar_paciente(BDPaciente *pL) {
     }
 }
 
-
+// ------------ Funcoes de remocao ----------------------------------
 // Funcao local para imprimir o menu de consulta
 static void print_menu_remover() {
     printf("\nExecute uma consulta para encontrar o registro que deseja excluir.\n");
@@ -353,8 +333,8 @@ void remover_paciente_id(BDPaciente *pL, int id) {
         return;
     }
 
-    PacienteNode *prev = NULL;
 
+    PacienteNode *prev = NULL;
     while (!encontrado && pN != NULL) {
         if (id_cmp(pN->paciente, id)) {
             encontrado = 1;
@@ -418,6 +398,61 @@ void gerenciar_remover_paciente(BDPaciente *pL) {
         print_menu_remover();
         scanf(" %c", &menu);
     }
+}
+
+// ---------------------- Funcoes de insercao ------------------------
+int gerar_id(BDPaciente *pL) {
+    return get_id(pL->last->paciente) + 1;
+}
+
+void gerenciar_insercao_paciente(BDPaciente *pL) {
+    printf("Para inserir um novo registro: \n");
+    printf("Digite o CPF (apenas dígitos): ");
+    char cpf[15];
+    scanf(" %s", cpf);
+
+    printf("Digite o nome do paciente: ");
+    char nome[100];
+    scanf(" %99[^\n]", nome); // essa merda nao funciona pra nome com espaco
+
+    printf("Digite a idade do paciente: ");
+    int idade;
+    scanf("%d", &idade);
+
+    printf("Digite a data de cadastro (YYYY-MM-DD): ");
+    char data_cadastro[11];
+    scanf(" %s", data_cadastro);
+
+    int id = gerar_id(pL);
+
+    char confirmacao;
+    Paciente *p = create_paciente(id, cpf, nome, idade, data_cadastro);
+    printf("Confirmar a inserção do registro abaixo? (S/N)\n");
+    print_header();
+    print_paciente(p);
+    scanf(" %c", &confirmacao);
+
+}
+
+// ---------------------- Funcoes de arquivo ----------------------------
+// Funcao para criar uma lista de pacientes a partir de um arquivo
+BDPaciente *pL_create_from_file(const char *filename) {
+    FILE *f = fopen(filename, "rt");
+    if (f == NULL) {
+        printf("Erro ao abrir o arquivo %s\n", filename);
+        return NULL;
+    }
+
+    BDPaciente *pL = pL_create();
+    char linha[200];
+    int i = 0;
+    while (fgets(linha, 200, f) != NULL) {
+        Paciente *p = insert_paciente(linha);
+        pL_insert(pL, p);
+        i++;
+    }
+    fclose(f);
+    return pL;
 }
 
 // Funcao para salvar a lista no 'banco'

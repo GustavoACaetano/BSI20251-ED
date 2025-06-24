@@ -26,6 +26,8 @@ void gerenciar_atualizar_paciente(BDPaciente *pL);
 
 void gerenciar_remover_paciente(BDPaciente *pL);
 
+void gerenciar_insercao_paciente(BDPaciente *pL);
+
 void remover_paciente_id(BDPaciente *pL, int id);
 
 #endif

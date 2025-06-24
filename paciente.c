@@ -36,6 +36,10 @@ int id_cmp(const Paciente *p, const int id) {
     return p->id == id;
 }
 
+int get_id(Paciente *p) {
+    return p->id;
+}
+
 char *get_nome(Paciente *p) {
     return p->nome;
 }
@@ -70,6 +74,22 @@ void set_data_cadastro(Paciente *p, const char *data_cadastro) {
     strcpy(p->data_cadastro, inverted_data);
 }
 
+
+Paciente *create_paciente(int id, const char *cpf, const char *nome, int idade, const char *data_cadastro) {
+    Paciente *p = (Paciente *) malloc(sizeof(Paciente));
+    if (p == NULL) {
+        printf("Erro ao alocar memória\n");
+        return NULL;
+    }
+
+    p->id = id;
+    set_cpf(p, cpf);
+    set_nome(p, nome);
+    p->idade = idade;
+    strcpy(p->data_cadastro, data_cadastro);
+
+    return p;
+}
 
 // // Funcao generica para pesquisar pacientes
 // void pesquisar_campo(const PacientesDynVec *pdv, char *valor_buscar, int campo) {
