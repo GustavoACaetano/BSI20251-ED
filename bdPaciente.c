@@ -36,7 +36,7 @@ PacienteNode *pN_create(Paciente *p) {
     PacienteNode *pN = (PacienteNode *) malloc(sizeof(PacienteNode));
     if (pN == NULL) {
         printf("Erro ao alocar memória\n");
-        return 0;
+        return NULL;
     }
 
     pN->paciente = p;
@@ -46,8 +46,9 @@ PacienteNode *pN_create(Paciente *p) {
 }
 
 // Funcao para inserir um node na lista
-void pL_insert(BDPaciente *pL, Paciente *p) {
+int pL_insert(BDPaciente *pL, Paciente *p) {
     PacienteNode *pN = pN_create(p);
+    if (pN == NULL) return 0;
 
     if (pL->last == NULL) {
         pL->first = pN;
@@ -57,6 +58,7 @@ void pL_insert(BDPaciente *pL, Paciente *p) {
     }
     pL->count++;
     pL->last = pN;
+    return 1;
 }
 
 // Funcao local para imprimir um header das informacoes do paciente
@@ -324,13 +326,13 @@ static void print_menu_remover() {
     printf("4 - Retornar ao menu principal\n");
 }
 
-void remover_paciente_id(BDPaciente *pL, int id) {
+int remover_paciente_id(BDPaciente *pL, int id) {
     int encontrado = 0;
 
     PacienteNode *pN = pL->first;
     if (pN == NULL) {
         printf("Nenhum registro salvo!");
-        return;
+        return 0;
     }
 
 
@@ -346,7 +348,7 @@ void remover_paciente_id(BDPaciente *pL, int id) {
 
             free(pN->paciente);
             free(pN);
-            return;
+            return 1;
         }
         prev = pN;
         pN = pN->next;
@@ -355,6 +357,7 @@ void remover_paciente_id(BDPaciente *pL, int id) {
     if (!encontrado) {
         printf("Nenhum paciente encontrado com ID %d", id);
     }
+    return 0;
 }
 
 // Funcao para remover um paciente
@@ -364,12 +367,20 @@ void remover_paciente(BDPaciente *pL) {
     scanf("%d", &id);
     
     char confirmacao;
-    printf("\nTem certeza que deseja excluir o registro abaixo? (S/N)\n");
-    print_paciente_id(pL, id);
-    scanf(" %c", &confirmacao);
-
-    if (confirmacao == 'S') {
-        remover_paciente_id(pL, id);
+    while (confirmacao != 'S' && confirmacao != 'N') {
+        printf("\nTem certeza que deseja excluir o registro abaixo? (S/N)\n");
+        print_paciente_id(pL, id);
+        printf("\n Digite (S/N): ");
+        scanf(" %c", &confirmacao);
+        
+        if (confirmacao == 'S') {
+            int sucesso = remover_paciente_id(pL, id);
+            if (sucesso) printf("\nO registro foi excluído com sucesso.");
+        } else if (confirmacao == 'N') {
+            printf("\nRemoção cancelada.");
+        } else {
+            printf("\nComando desconhecido.\n");
+        }
     }
 }
 
@@ -393,6 +404,7 @@ void gerenciar_remover_paciente(BDPaciente *pL) {
                 break;
             default:
                 printf("Opção inválida!\n");
+                break;
         }
         // Algum erro que está aparecendo várias vezes
         print_menu_remover();
@@ -413,7 +425,7 @@ void gerenciar_insercao_paciente(BDPaciente *pL) {
 
     printf("Digite o nome do paciente: ");
     char nome[100];
-    scanf(" %99[^\n]", nome); // essa merda nao funciona pra nome com espaco
+    scanf(" %99[^\n]", nome);
 
     printf("Digite a idade do paciente: ");
     int idade;
@@ -427,11 +439,23 @@ void gerenciar_insercao_paciente(BDPaciente *pL) {
 
     char confirmacao;
     Paciente *p = create_paciente(id, cpf, nome, idade, data_cadastro);
-    printf("Confirmar a inserção do registro abaixo? (S/N)\n");
-    print_header();
-    print_paciente(p);
-    scanf(" %c", &confirmacao);
+    while (confirmacao != 'S' && confirmacao != 'N') {
+        printf("Confirmar a inserção do registro abaixo? (S/N)\n");
+        print_header();
+        print_paciente(p);
+        printf("\n Digite (S/N): ");
+        scanf(" %c", &confirmacao);
 
+        if (confirmacao == 'S') {
+            int sucesso = pL_insert(pL,p);
+            if (sucesso) printf("\nO registro foi inserido com sucesso.");
+        } else if (confirmacao == 'N') {
+            printf("\nInserção cancelada.");
+            free(p);
+        } else {
+            printf("\nComando desconhecido.\n");
+        }
+    }
 }
 
 // ---------------------- Funcoes de arquivo ----------------------------

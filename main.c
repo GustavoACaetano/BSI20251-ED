@@ -24,6 +24,8 @@ int main() {
         return 1;
     }
     
+    printf("\n---------- HealthySys ----------");
+
     print_menu();
     // Loop principal de funcionamento
     char menu;

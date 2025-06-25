@@ -10,7 +10,7 @@ BDPaciente *pL_create();
 
 PacienteNode *pN_create(Paciente *p);
 
-void pL_insert(BDPaciente *pL, Paciente *p);
+int pL_insert(BDPaciente *pL, Paciente *p);
 
 BDPaciente *pL_create_from_file(const char *filename);
 
@@ -28,6 +28,6 @@ void gerenciar_remover_paciente(BDPaciente *pL);
 
 void gerenciar_insercao_paciente(BDPaciente *pL);
 
-void remover_paciente_id(BDPaciente *pL, int id);
+int remover_paciente_id(BDPaciente *pL, int id);
 
 #endif
