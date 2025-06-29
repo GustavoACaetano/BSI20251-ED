@@ -245,8 +245,8 @@ static void pesquisar_cpf(const BDPaciente *pL) {
     printf("Digite o cpf do paciente: ");
     scanf("%s", cpf_entrada);
     char *cpf = cpf_mask(cpf_entrada);
-    printf("\n\n%s\n\n", cpf);
     pesquisar_campo(pL, cpf, 2);
+    free(cpf);
 }
 
 
@@ -411,6 +411,7 @@ void gerenciar_insercao_paciente(BDPaciente *pL) {
 
     char confirmacao;
     Paciente *p = create_paciente(id, cpf, nome, idade, data_cadastro);
+    free(cpf);
     if (p == NULL) return;
 
     // Espera por uma resposta valida
