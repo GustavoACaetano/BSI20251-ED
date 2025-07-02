@@ -21,6 +21,7 @@ struct bdPaciente {
 
 
 // -------------------- Funcoes basicas de lista --------------------------
+
 // Funcao para criar uma lista encadeada de pacientes
 BDPaciente *pL_create() {
     BDPaciente *pL = (BDPaciente *) malloc(sizeof(BDPaciente));
@@ -175,6 +176,7 @@ void salvar_pacientes(const BDPaciente *pL, const char *filename) {
 
 
 // --------------------- Funcoes de consulta ------------------------------------
+
 // Funcao local para imprimir o menu de consulta
 static void print_menu_consulta() {
     printf("\nEscolha o modo de consulta:\n");
@@ -275,6 +277,7 @@ void consultar_pacientes(const BDPaciente *pL) {
 
 
 // ------------ Funcoes de remocao ----------------------------------
+
 // Funcao local para imprimir o menu de remocao
 static void print_menu_remover() {
     printf("\nExecute uma consulta para encontrar o registro que deseja excluir.\n");
@@ -286,6 +289,7 @@ static void print_menu_remover() {
 }
 
 
+// Funcao para remover um paciente da lista pelo ID
 int remover_paciente_id(BDPaciente *pL, int id) {
     int encontrado = 0;
 
@@ -381,12 +385,13 @@ void gerenciar_remover_paciente(BDPaciente *pL) {
 
 
 // ---------------------- Funcoes de insercao ------------------------
+
+// Funcao para gerar ID a partir do ultimo paciente salvo
 int gerar_id(BDPaciente *pL) {
-    // Geracao do ID a partir do ultimo paciente salvo
     return get_id(pL->last->paciente) + 1;
 }
  
-
+// Funcao para o gerenciar o menu de insercao de paciente
 void gerenciar_insercao_paciente(BDPaciente *pL) {
     // Entrada dos dados do paciente
     printf("Para inserir um novo registro: \n");
@@ -439,6 +444,8 @@ void gerenciar_insercao_paciente(BDPaciente *pL) {
 
 
 // ------------------------ Funcoes de atualizacao ------------------------
+
+// Funcao local para imprimir o menu de atualizar
 static void print_menu_atualizar() {
     printf("\nExecute uma consulta para encontrar o registro que deseja atualizar.\n");
     printf("Escolha o modo de consulta:\n");
@@ -449,6 +456,7 @@ static void print_menu_atualizar() {
 }
 
 
+// Funcao para atualizar o paciente a partir do ID e dos dados
 void atualizar_paciente_id(BDPaciente *pL, int id, char *cpf, char *nome, int idade, char *data_cadastro) {
     int encontrado = 0;
 
@@ -463,22 +471,23 @@ void atualizar_paciente_id(BDPaciente *pL, int id, char *cpf, char *nome, int id
     while (!encontrado && pN != NULL) {
         if (id_cmp(paciente, id)) {
             encontrado = 1;
-            if (cpf != NULL || cpf[0] != '-') {
-                set_cpf(paciente, cpf);
+            if (cpf != NULL && cpf[0] != '-') {
+                set_cpf(paciente, cpf_mask(cpf));
             }
 
-            if (nome != NULL || nome[0] != '-') {
+            if (nome != NULL && nome[0] != '-') {
                 set_nome(paciente, nome);
             }
             if (idade != -1) {
                 set_idade(paciente, idade);
             }
-            if (data_cadastro != NULL || data_cadastro[0] != '-') {
+            if (data_cadastro != NULL && data_cadastro[0] != '-') {
                 set_data_cadastro(paciente, data_cadastro);
             }
             return;
         }
         pN = pN->next;
+        paciente = pN->paciente;
     }
 
     if (!encontrado) {
@@ -487,11 +496,12 @@ void atualizar_paciente_id(BDPaciente *pL, int id, char *cpf, char *nome, int id
 }
 
 
+// Funcao para coletar os dados e atualizar o paciente
 void atualizar_paciente(BDPaciente *pL) {
     int id = 0;
     printf("\nDigite o ID do registro a ser atualizado: ");
     scanf("%d", &id);
-    
+    print_header();
     print_paciente_id(pL, id);
     printf("\nDigite o novo valor para os campos CPF (apenas dígitos), Nome, Idade e Data de Cadastro (para manter o valor atual de um campo, digite ’-’):\n");
 
@@ -500,7 +510,7 @@ void atualizar_paciente(BDPaciente *pL) {
     scanf("%s", cpf);
     printf("Nome: ");
     char nome[100];
-    scanf(" %s", nome);
+    scanf(" %99[^\n]", nome);
     printf("Idade: ");
     char str_idade[3];
     scanf(" %s", str_idade);
@@ -510,7 +520,7 @@ void atualizar_paciente(BDPaciente *pL) {
     } else {
         idade = atoi(str_idade);
     }
-    printf("Data de Cadastro (DD/MM/AAAA): ");
+    printf("Data de Cadastro (YYYY-MM-DD): ");
     char data_cadastro[11];
     scanf(" %s", data_cadastro);
 
@@ -518,6 +528,7 @@ void atualizar_paciente(BDPaciente *pL) {
 }
 
 
+// Funcao para gerenciar o menu de atualizacao
 void gerenciar_atualizar_paciente(BDPaciente *pL) {
     print_menu_atualizar();
     char menu;

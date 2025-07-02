@@ -67,12 +67,7 @@ void set_idade(Paciente *p, int idade) {
 }
 
 void set_data_cadastro(Paciente *p, const char *data_cadastro) {
-    assert(strlen(data_cadastro) < sizeof(p->data_cadastro));
-
-    char inverted_data[11];
-    snprintf(inverted_data, sizeof(inverted_data), "%.4s-%.2s-%.2s", data_cadastro + 6, data_cadastro + 3, data_cadastro);
-
-    strcpy(p->data_cadastro, inverted_data);
+    strcpy(p->data_cadastro, data_cadastro);
 }
 
 

@@ -3,6 +3,7 @@
 #include "paciente.h"
 #include "bdPaciente.h"
 
+
 // Impressao do menu principal do programa
 void print_menu() {
     printf("\nMenu:\n");
@@ -14,6 +15,7 @@ void print_menu() {
     printf("Q - Sair\n");
     printf("Escolha uma opção: ");
 }
+
 
 int main() {
     // Carregando o "banco de dados" no programa
@@ -49,6 +51,7 @@ int main() {
                 break;
             default:
                 printf("Opção inválida!\n");
+                break;
         }
         print_menu();
         scanf(" %c", &menu);
