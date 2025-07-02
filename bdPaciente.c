@@ -345,7 +345,10 @@ void remover_paciente(BDPaciente *pL) {
         // Se houver a confirmacao, remove o paciente
         if (confirmacao == 'S') {
             int sucesso = remover_paciente_id(pL, id);
-            if (sucesso) printf("\nO registro foi excluído com sucesso.");
+            if (sucesso) {
+                printf("\nO registro foi excluído com sucesso.");
+                salvar_pacientes(pL, "bd_paciente.csv");
+            }
         } else if (confirmacao == 'N') {
             printf("\nRemoção cancelada.");
         } else {
@@ -431,7 +434,10 @@ void gerenciar_insercao_paciente(BDPaciente *pL) {
         // Se houver a confirmacao, adiciona o paciente na lista
         if (confirmacao == 'S') {
             int sucesso = pL_insert(pL,p);
-            if (sucesso) printf("\nO registro foi inserido com sucesso.");
+            if (sucesso) {
+                printf("\nO registro foi inserido com sucesso.");
+                salvar_pacientes(pL, "bd_paciente.csv");
+            }
         } else if (confirmacao == 'N') { 
             // Se houver o cancelamento, libera a memoria
             printf("\nInserção cancelada.");
@@ -484,6 +490,7 @@ void atualizar_paciente_id(BDPaciente *pL, int id, char *cpf, char *nome, int id
             if (data_cadastro != NULL && data_cadastro[0] != '-') {
                 set_data_cadastro(paciente, data_cadastro);
             }
+            salvar_pacientes(pL, "bd_paciente.csv");
             return;
         }
         pN = pN->next;
