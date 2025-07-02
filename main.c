@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "paciente.h"
-#include "bdPaciente.h"
+#include "paciente/paciente.h"
+#include "paciente/bdPaciente.h"
 
 
 // Impressao do menu principal do programa
