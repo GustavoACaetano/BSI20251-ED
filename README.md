@@ -4,7 +4,7 @@
 [Gustavo Alves Caetano](https://github.com/GustavoACaetano)<br>
 [João Pedro Zamborlini Barcellos](https://github.com/joaopbarcellos) <br>
 
-### ▶ Execução do projeto
+### ⚙ Execução do projeto
 Pré-requisito: <br>
 Ter instalado o gcc-11
 
