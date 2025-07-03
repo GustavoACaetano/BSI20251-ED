@@ -5,7 +5,7 @@ CC = gcc-11
 CFLAGS = -Wall
 
 # Source files
-SRCS = main.c paciente.c bdPaciente.c bdPaciente.h paciente.h strings.c strings.h 
+SRCS = main.c paciente/paciente.c paciente/paciente.h paciente/bdPaciente.c paciente/bdPaciente.h  utils/strings.c utils/strings.h 
 
 # Object files
 OBJS = $(SRCS:.c=.o)

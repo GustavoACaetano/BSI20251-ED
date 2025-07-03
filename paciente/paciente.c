@@ -1,5 +1,5 @@
 #include "paciente.h"
-#include "strings.h"
+#include "../utils/strings.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
