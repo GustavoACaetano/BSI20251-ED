@@ -1,40 +1,30 @@
 #ifndef PACIENTE_H
 #define PACIENTE_H
+#include <stdio.h>
 
 typedef struct paciente Paciente;
-typedef struct pacientesDynVec PacientesDynVec;
 
-// Cria um vetor dinamico de pacientes
-PacientesDynVec* pdv_create();
+void print_paciente(const Paciente *p);
 
-// Cria um vetor dinamico de pacientes a partir de um arquivo
-PacientesDynVec* pdv_create_from_file(const char *filename);
+Paciente *insert_paciente(const char *linha);
 
-// Insere um paciente no vetor
-void pdv_insert(PacientesDynVec *pdv, Paciente p);
+void write_paciente(FILE *f, const Paciente *p);
 
-// Retorna o tamanho do vetor
-int pdv_size(const PacientesDynVec *pdv);
+Paciente *create_paciente(int id, const char *cpf, const char *nome, int idade, const char *data_cadastro);
 
-// Retorna a capacidade do vetor
-int pdv_capacity(const PacientesDynVec *pdv);
+int id_cmp(const Paciente *p, const int id);
 
-// Retorna um paciente com base no indice
-Paciente pdv_get(const PacientesDynVec *pdv, int i);
+int get_id(Paciente *p);
 
-// Libera a memoria do vetor
-void pdv_free(PacientesDynVec *pdv);
+char *get_nome(Paciente *p);
 
-// Imprime os pacientes do vetor
-void print_pacientes(const PacientesDynVec *pdv);
+char *get_cpf(Paciente *p);
 
-// Pesquisa pacientes pelo nome
-void pesquisar_nome(const PacientesDynVec *pdv);
+void set_nome(Paciente *p, const char *nome);
 
-// Pesquisa pacientes pelo cpf
-void pesquisar_cpf(const PacientesDynVec *pdv);
+void set_cpf(Paciente *p, const char *cpf);
 
-// Chama a busca de consulta de pacientes
-void consultar_pacientes(const PacientesDynVec *pdv);
+void set_idade(Paciente *p, int idade);
 
+void set_data_cadastro(Paciente *p, const char *data_cadastro);
 #endif

@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "paciente.h"
+#include "bdPaciente.h"
+
 
 // Impressao do menu principal do programa
 void print_menu() {
@@ -14,15 +16,18 @@ void print_menu() {
     printf("Escolha uma opção: ");
 }
 
+
 int main() {
     // Carregando o "banco de dados" no programa
     char *arquivo = "bd_paciente.csv";
-    PacientesDynVec *pacientes = pdv_create_from_file(arquivo);
+    BDPaciente *pacientes = pL_create_from_file(arquivo);
     if (pacientes == NULL) {
         printf("Erro ao carregar pacientes. Programa interrompido.\n");
         return 1;
     }
     
+    printf("\n---------- HealthySys ----------");
+
     print_menu();
     // Loop principal de funcionamento
     char menu;
@@ -33,23 +38,25 @@ int main() {
                 consultar_pacientes(pacientes);
                 break;
             case '2':
-                printf("Função não implementada!\n");
+                gerenciar_atualizar_paciente(pacientes);
                 break;
             case '3':
-                printf("Função não implementada!\n");
+                gerenciar_remover_paciente(pacientes);
                 break;
             case '4':
-                printf("Função não implementada!\n");
+                gerenciar_insercao_paciente(pacientes);
                 break;
             case '5':
                 print_pacientes(pacientes);
                 break;
             default:
                 printf("Opção inválida!\n");
+                break;
         }
         print_menu();
         scanf(" %c", &menu);
     }
-    pdv_free(pacientes);
+    salvar_pacientes(pacientes, arquivo);
+    pL_free(pacientes);
     return 0;
 }
